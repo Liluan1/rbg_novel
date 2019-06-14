@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block header %}
+<title>{{ name }} - 搜索结果 - </title>
+<link rel="stylesheet" href="static/css/result.css">
+<style>
+    @media (min-width: 1680px) {
+        .container {
+            margin-left: 3% !important;
+        }
+    }
+
+</style>
+{% endblock %}
+{% block navbar %}{% endblock %}
+{% block content %}
+{{ super() }}
+<nav class="navbar navbar-default" style="height: 65px">
+    <div class="container-fluid center-block">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/" style="padding-top: 7.5px; padding-left: 45px">
+                <img alt="Novel" src="static/img/rgb_50px.png" style="background-color:transparent;">
+            </a>
+        </div>
+        <form action="/search" method="get">
+            <div class="col-xs-6 search" style="padding-left: 0">
+                <input type="text" name="wd" class="form-control" value="{{name}}">
+            </div>
+        </form>
+    </div>
+</nav>
+<div class="container result">
+    <div class="show-result col-sm-7 col-xs-12">
+        <p style="color: #868383;font-size: 13px; ">找到 {{count}} 条结果（用时{{time}}s）</p>
+        <div class="list-unstyled item">
+            {%for item in result%}
+            <div class="result_item">
+                <li>
+                    <a target="_blank" href="/chapter?url={{item.url}}&novels_name={{name}}">{{item.title}}</a>
+                    <div class="netloc">
+                        <i>{{item.netloc}}</i>
+                        <i><a target="_blank" href="{{item.url}}">查看源网址</a></i>
+                    </div>
+                    <div class="tags">
+                        <span>{{item.time}}</span>
+                        {% if item.is_recommend %}
+                        <span class="label label-primary">推荐源</span>
+                        {% else %}
+                        {% endif %}
+                        {% if item.is_parse %}
+                        <span class="label label-primary parse-label">已解析</span>
+                        {% else %}
+                        <span class="label label-danger parse-label">未解析</span>
+                        {% endif %}
+                    </div>
+                </li>
+            </div>
+            {%endfor%}
+        </div>
+        <div class="move">
+            <div class="move_up">
+                <span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span>
+            </div>
+            <div class="move_down">
+                <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+    {% endblock %}

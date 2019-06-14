@@ -1,0 +1,28 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" href="static/img/favicon.ico"/>
+    <link rel="bookmark" href="static/img/favicon.ico"/>
+    <link rel="stylesheet" href="static/css/base.css">
+    {% block header %}{% endblock %}
+{% endblock %}
+{% block body %}
+
+{% block content %}
+<div class="footer">
+    <nav class="navbar navbar-default navbar-fixed-bottom">
+        <div class="message">
+            <div class="right">
+
+            </div>
+        </div>
+    </nav>
+</div>
+{% endblock %}
+{% block scripts %}
+{{super()}}
+{% endblock %}
+{% endblock %}
+
+

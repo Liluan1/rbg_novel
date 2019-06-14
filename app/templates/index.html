@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}novel search{% endblock %}
+{% block header %}
+<link rel="stylesheet" href="static/css/index.css">
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<div class="container">
+    <div class="logo">
+        <img class="center-block" src="../static/img/rgb_128px.png" alt="RBG">
+    </div>
+    <form action="/search" method="GET" class="home_search center-block">
+        <div class="search center-block">
+            <input type="text" name="wd" class="form-control center-block" placeholder="请输入小说名">
+            <input class="btn btn-default" type="submit" value="Search">
+        </div>
+    </form>
+</div>
+
+{% endblock %}
