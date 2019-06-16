@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-
+{% block title %}{{ name }} - 搜索结果 - {% endblock %}
 {% block header %}
-<title>{{ name }} - 搜索结果 - </title>
+
 <link rel="stylesheet" href="static/css/result.css">
 <style>
     @media (min-width: 1680px) {
@@ -15,6 +15,7 @@
 {% block navbar %}{% endblock %}
 {% block content %}
 {{ super() }}
+<a href=""></a>
 <nav class="navbar navbar-default" style="height: 65px">
     <div class="container-fluid center-block">
         <div class="navbar-header">
@@ -42,10 +43,8 @@
                         <i><a target="_blank" href="{{item.url}}">查看源网址</a></i>
                     </div>
                     <div class="tags">
-                        <span>{{item.time}}</span>
                         {% if item.is_recommend %}
                         <span class="label label-primary">推荐源</span>
-                        {% else %}
                         {% endif %}
                         {% if item.is_parse %}
                         <span class="label label-primary parse-label">已解析</span>

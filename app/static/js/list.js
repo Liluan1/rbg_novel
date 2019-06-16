@@ -7,6 +7,14 @@ $(document).ready(function () {     // dom树加载完成的时候，执行接�
         if (typeof(url) != "undefined") {   // if url未定义
             var name = $(this).text();      // a标签中的 text
             // 当content_url为1，表示该链接不用拼接
+            if (name == '直达底部'){
+                $(this).attr('href', '#footer');
+                return;
+            }
+            if (name == '投推荐票' || name == 'TXT'){
+                $(this).attr('href', '');
+                return;
+            }
             if (content_url == '1') {
                 content_url = ''
             } else if (content_url == '0') {

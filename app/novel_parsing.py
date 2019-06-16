@@ -8,7 +8,6 @@ import chardet
 
 
 def get_html_by_requests(url, headers, timeout=15):
-
     try:
         response = requests.get(url=url, headers=headers, timeout=timeout)
         response.raise_for_status()
@@ -19,16 +18,6 @@ def get_html_by_requests(url, headers, timeout=15):
     except Exception as e:
         print(e)
         return None
-
-
-def novels_list(text):
-    rm_list = ['后一个', '天上掉下个']
-    for i in rm_list:
-        if i in text:
-            return False
-        else:
-            continue
-    return True
 
 
 def extract_pre_next_chapter(chapter_url, html):
@@ -44,15 +33,14 @@ def extract_pre_next_chapter(chapter_url, html):
         next_reg = r'(<a\s+.*?>.*[第上前下后][一]?[0-9]{0,6}?[页张个篇章节步].*?</a>)'
         judge_reg = r'[第上前下后][一]?[0-9]{0,6}?[页张个篇章节步]'
         # 这里同样需要利用bs再次解析
-        next_res = re.findall(next_reg, html.replace('<<', '').replace('>>', ''), re.I)
-        str_next_res = '\n'.join(next_res)
+        next_res = re.findall(next_reg, html, re.I)
+        str_next_res = '\n'.join(next_res) # 生成字符串
         next_res_soup = BeautifulSoup(str_next_res, 'html5lib')
         for link in next_res_soup.find_all('a'):
             text = link.text or ''
             text = text.replace(' ', '')
-            if novels_list(text):
+            if text:
                 is_next = re.search(judge_reg, text)
-                # is_ok = is_chapter(text)
                 if is_next:
                     url = urljoin(chapter_url, link.get('href')) or ''
                     next_chapter[text[:5]] = url
@@ -63,6 +51,12 @@ def extract_pre_next_chapter(chapter_url, html):
 
 
 def cache_novels_content(url, netloc):
+    """
+    获取小说某章节内容
+    :param url: 章节url
+    :param netloc: 网站url
+    :return: 某章节内容
+    """
     headers = {
         'user-agent': USER_AGENT
     }
@@ -70,6 +64,7 @@ def cache_novels_content(url, netloc):
     html = get_html_by_requests(url=url, headers=headers)
     if html:
         soup = BeautifulSoup(html, 'html5lib')
+        # 获取标记
         selector = RULES[netloc].content_selector
         if selector.get('id', None):
             content = soup.find_all(id=selector['id'])
@@ -102,6 +97,12 @@ def cache_novels_content(url, netloc):
 
 
 def cache_novels_chapter(url, netloc):
+    """
+    获取小说目录页
+    :param url: 目录页url
+    :param netloc: 网站url
+    :return:
+    """
     headers = {
         'user-agent': USER_AGENT
     }
@@ -116,10 +117,9 @@ def cache_novels_chapter(url, netloc):
             content = soup.find_all(class_=selector['class'])
         else:
             content = soup.find_all(selector.get('tag'))
-        # 清除所有图片链接 https://www.cnblogs.com/yizhenfeng168/p/6999355.html
+        # 清除所有原始网页的图片 https://www.cnblogs.com/yizhenfeng168/p/6999355.html
         img_plants = soup.find_all('img')
         for img in img_plants:
             img.extract()
-        # 防止章节被display:none
         return str(content).replace('style', '') if content else None
     return None

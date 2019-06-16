@@ -10,11 +10,18 @@ from operator import itemgetter
 
 @main.route("/", methods=['GET', 'POST'])
 def index():
+    """
+    主页
+    """
     return render_template('index.html')
 
 
 @main.route("/search", methods=['GET'])
 def search():
+    """
+    搜索结果页
+    :return:
+    """
     start = time.time()
     name = str(request.args.get('wd')).strip()
     novels_keyword = name.split(' ')[0]
@@ -24,8 +31,8 @@ def search():
     # 通过搜索引擎获取检索结果
     novels_name = "{name} 小说 阅读 最新章节".format(name=name)
     parse_result = so_search(novels_name=novels_name)
-    # https://www.cnblogs.com/gongxr/p/7291714.htm
-    result_sorted = sorted(parse_result,reverse=True,key=itemgetter('is_parse', 'timestamp'))
+    # 根据推荐源和是否解析进行排序 https://www.cnblogs.com/gongxr/p/7291714.htm
+    result_sorted = sorted(parse_result,reverse=True,key=itemgetter('is_recommend', 'is_parse'))
     return render_template('result.html', name=novels_keyword, time='%.2f' % (time.time() - start), result=result_sorted,
                            count=len(parse_result))
 
@@ -34,7 +41,7 @@ def search():
 def chapter():
     """
     返回小说章节目录页
-    : content_url   这决定当前U页面url的生成方式
+    : content_url   这决定当前页面url的生成方式
     : url           章节目录页源url
     : novels_name   小说名称
     :return         小说章节内容页
@@ -42,13 +49,14 @@ def chapter():
     url = request.args.get('url')
     novels_name = request.args.get('novels_name')
     netloc = urlparse(url).netloc
-    if netloc not in RULES.keys():
+    if netloc not in RULES.keys():  # 判断是否已解析
         return redirect(url)
-    content_url = RULES[netloc].content_url
+    content_url = RULES[netloc].content_url # 获取url生成方式
     content = cache_novels_chapter(url=url, netloc=netloc)
     if content:
+        # 去掉一些不必要的连接
         content = str(content).strip('[],, Jjs').replace(', ', '').replace('onerror', '').replace('js', '').replace(
-            '加入书架', '')
+            '加入书架', '').replace('投推荐票', '')
         return render_template(
             'chapter.html', novels_name=novels_name, url=url, content_url=content_url, soup=content)
     else:
@@ -83,10 +91,10 @@ def content():
     if content_data:
         try:
             content = content_data.get('content', '获取失败')
-            next_chapter = content_data.get('next_chapter', [])
-            title = content_data.get('title', '').replace(novels_name, '')
-            name = title if title else name
-            # 破坏广告链接
+            next_chapter = content_data.get('next_chapter', []) # 获取上下章节的连接
+            title = content_data.get('title', '').replace(novels_name, '') # 在每一章的标题中去掉小说标题
+            name = title if title else name # 如果本章节没有标题，则使用小说标题
+            # 去掉广告链接
             content = str(content).strip('[]Jjs,').replace('http', 'hs').replace('.js', '').replace('();', '')
             return render_template('content.html', name=name, url=url, bookmark=0, book=0, content_url=content_url,
                                    chapter_url=chapter_url, novels_name=novels_name, next_chapter=next_chapter, soup=content)
@@ -94,6 +102,6 @@ def content():
             print(e)
             return redirect(book_url)
     else:
-       return ('parse_error:{url}'.format(url=url))
+       return ('解析失败，:<a href="{url}">原网页</a>'.format(url=url))
 
 

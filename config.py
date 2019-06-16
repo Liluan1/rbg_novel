@@ -22,7 +22,7 @@ config = {
 USER_AGENT = 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; Media Center PC 6.0; InfoPath.3; MS-RTC LM 8; Zune 4.7)'
 
 
-# DOMAIN
+# 黑名单
 BLACK_DOMAIN = ['www.17k.com', 'mm.17k.com', 'www.xs8.cn', 'www.zongheng.com', 'yunqi.qq.com', 'chuangshi.qq.com',
                 'book.qidian.com', 'www.soduso.com', 'pages.book.qq.com', 'book.km.com', 'www.lread.net',
                 'www.0dsw.com', 'www.5200xsb.com', 'www.80txt.com', 'www.sodu.tw', 'www.shuquge.com',
@@ -54,7 +54,7 @@ BLACK_DOMAIN = ['www.17k.com', 'mm.17k.com', 'www.xs8.cn', 'www.zongheng.com', '
                 "xs.sogou.com"]
 
 
-# Rules
+# 解析规则
 Rules = namedtuple('Rules', 'content_url chapter_selector content_selector')
 LatestRules = namedtuple('LatestRules', 'plan meta_value selector')
 
@@ -62,6 +62,7 @@ RULES = {
     # demo  'name': Rules('content_url', {chapter_selector}, {content_selector})
     # content_url=1 表示章节链接使用本身自带的链接，不用拼接
     # content_url=0 表示章节网页需要当前页面url拼接
+    # content_url=netloc 表示使用域名进行拼接
     # 'www.biqule.com': Rules('www.biqule.com', {'class': 'box_con'},{}),
     # 'www.lingdiankanshu.com': Rules('www.lingdiankanshu.com', {'class': 'box_con'}, {}),
     # 'www.hhlwx.com': Rules('www.hhlwx.co', {'class': 'chapterlist'},{}),
@@ -528,6 +529,7 @@ PLAN_01 = LatestRules(
     None,
 )
 
+# 一些比较好的小说网站，优先排序
 LATEST_RULES = {
     "www.biqugex.com": PLAN_01,
     "www.x23us.com": PLAN_01,
